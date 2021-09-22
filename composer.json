@@ -1,0 +1,29 @@
+{
+    "name": "leafs/cors",
+    "description": "Leaf PHP cors config",
+    "keywords": [
+        "cors",
+        "cross origin resource sharing",
+        "origin",
+        "leaf",
+        "php",
+        "framework"
+    ],
+    "homepage": "https://leafphp.netlify.app/#/",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Michael Darko",
+            "email": "mickdd22@gmail.com",
+            "homepage": "https://mychi.netlify.app",
+            "role": "Developer"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Leaf\\Http\\": "src"
+        }
+    },
+    "minimum-stability": "stable"
+}
