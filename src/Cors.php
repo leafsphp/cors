@@ -26,21 +26,27 @@ class Cors
 		"optionsSuccessStatus" => 204,
 	];
 
+	/**
+	 * Configure for CORS
+	 * 
+	 * @param $config Configuration for CORS.
+	 * @see https://github.com/leafsphp/cors
+	 */
 	public static function config($config = [])
 	{
 		static::$config = array_merge(static::$defaultConfig, $config);
 
-		if (Request::getMethod() === "OPTIONS") {
-			if (static::$config["preflightContinue"]) {
-				// skip to code
-			} else {
-				static::configureOrigin();
-				static::configureHeaders();
-				static::configureExposedHeaders();
-				static::configureMaxAge();
-				static::configureCredentials();
-				static::configureMethods();
+		if (static::$config["preflightContinue"]) {
+			// skip to code
+		} else {
+			static::configureOrigin();
+			static::configureHeaders();
+			static::configureExposedHeaders();
+			static::configureMaxAge();
+			static::configureCredentials();
+			static::configureMethods();
 
+			if (Request::getMethod() === "OPTIONS") {
 				Response::throwErr(
 					"",
 					static::$config["optionsSuccessStatus"]
@@ -62,13 +68,15 @@ class Cors
 	{
 		$origin = static::$config["origin"];
 
-		// Safari (and potentially other browsers) need content-length 0,
-		// for 204 or they just hang waiting for a body
-		Headers::set("Content-Length", "0");
-		Headers::accessControl(
-			"Allow-Origin",
-			static::isOriginAllowed($origin) ? $_SERVER['HTTP_ORIGIN'] : false
-		);
+		if (Request::getMethod() === "OPTIONS" && !static::$config["preflightContinue"]) {
+			// Safari (and potentially other browsers) need content-length 0,
+			// for 204 or they just hang waiting for a body
+			Headers::set("Content-Length", "0");
+		}
+
+		if (static::isOriginAllowed($origin)) {
+			Headers::accessControl("Allow-Origin", $_SERVER['HTTP_ORIGIN']);
+		}
 
 		if ($origin !== "*") {
 			Headers::set("Vary", "Origin");
@@ -127,7 +135,7 @@ class Cors
 
 		if (is_array($allowedOrigin)) {
 			for ($i = 0; $i < count($allowedOrigin); $i++) {
-				if (static::isOriginAllowed($origin, $allowedOrigin[$i])) {
+				if (static::isOriginAllowed($allowedOrigin[$i])) {
 					return true;
 				}
 			}
