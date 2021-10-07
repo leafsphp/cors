@@ -36,16 +36,16 @@ class Cors
 	{
 		static::$config = array_merge(static::$defaultConfig, $config);
 
+		static::configureOrigin();
+		static::configureHeaders();
+		static::configureExposedHeaders();
+		static::configureMaxAge();
+		static::configureCredentials();
+		static::configureMethods();
+
 		if (static::$config["preflightContinue"]) {
 			// skip to code
 		} else {
-			static::configureOrigin();
-			static::configureHeaders();
-			static::configureExposedHeaders();
-			static::configureMaxAge();
-			static::configureCredentials();
-			static::configureMethods();
-
 			if (Request::getMethod() === "OPTIONS") {
 				Response::throwErr(
 					"",
@@ -75,7 +75,7 @@ class Cors
 		}
 
 		if (static::isOriginAllowed($origin)) {
-			Headers::accessControl("Allow-Origin", $_SERVER['HTTP_ORIGIN']);
+			Headers::accessControl("Allow-Origin", $_SERVER['HTTP_ORIGIN'] ?? Request::getUrl());
 		}
 
 		if ($origin !== "*") {
@@ -131,7 +131,7 @@ class Cors
 
 	protected static function isOriginAllowed($allowedOrigin)
 	{
-		$origin = $_SERVER['HTTP_ORIGIN'];
+		$origin = $_SERVER['HTTP_ORIGIN'] ?? Request::getUrl();
 
 		if (is_array($allowedOrigin)) {
 			for ($i = 0; $i < count($allowedOrigin); $i++) {
