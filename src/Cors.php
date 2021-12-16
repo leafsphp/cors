@@ -143,7 +143,7 @@ class Cors
 			return false;
 		} else if (is_string($allowedOrigin)) {
 			return $origin === $allowedOrigin;
-		} else if (@preg_match($allowedOrigin, null) === false) {
+		} else if ((explode('.', PHP_VERSION)[0] < 8) && @preg_match($allowedOrigin, null) === false) {
 			return !!preg_match($allowedOrigin, $origin);
 		} else {
 			return !!$allowedOrigin;
