@@ -6,7 +6,7 @@ namespace Leaf\Http;
  * Leaf CORS Module
  * -------
  * CORS simplified. Enable CORS with various options.
- * Inspired by Express js's CORS package.
+ * Inspired by Express JS' CORS package.
  * 
  * @version 1.0
  * @since 3.0-beta
@@ -29,10 +29,10 @@ class Cors
 	/**
 	 * Configure for CORS
 	 * 
-	 * @param $config Configuration for CORS.
+	 * @param array $config configuration for CORS.
 	 * @see https://github.com/leafsphp/cors
 	 */
-	public static function config($config = [])
+	public static function config(array $config = [])
 	{
 		static::$config = array_merge(static::$defaultConfig, $config);
 
@@ -44,7 +44,7 @@ class Cors
 		static::configureMethods();
 
 		if (static::$config["preflightContinue"]) {
-			// skip to code
+			// skip to code but left for future use
 		} else {
 			if (Request::getMethod() === "OPTIONS") {
 				Response::throwErr(
@@ -129,8 +129,8 @@ class Cors
 		}
 	}
 
-	protected static function isOriginAllowed($allowedOrigin)
-	{
+	protected static function isOriginAllowed($allowedOrigin): bool
+    {
 		$origin = $_SERVER['HTTP_ORIGIN'] ?? Request::getUrl();
 
 		if (is_array($allowedOrigin)) {
