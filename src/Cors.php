@@ -8,7 +8,7 @@ namespace Leaf\Http;
  * CORS simplified. Enable CORS with various options.
  * Inspired by Express JS' CORS package.
  * 
- * @version 1.1
+ * @version 1.0.1
  * @since 3.0-beta
  */
 class Cors
