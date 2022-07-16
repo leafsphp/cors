@@ -130,22 +130,18 @@ class Cors
 
 		if (is_array($allowedOrigin)) {
 			for ($i = 0; $i < count($allowedOrigin); $i++) {
-				if (static::isOriginAllowed($origin, $allowedOrigin[$i])) {
+				if (static::isOriginAllowed($allowedOrigin[$i])) {
 					return true;
 				}
 			}
 
 			return false;
 		} else if (is_string($allowedOrigin)) {
-			if ($allowedOrigin == '*') {
+			if ($allowedOrigin === "*" || $origin === $allowedOrigin) {
 				return true;
 			}
 
-			return $origin == $allowedOrigin;
-		} else if (@preg_match($allowedOrigin, null) === false) {
-			return !!preg_match($allowedOrigin, $origin);
-		} else {
-			return !!$allowedOrigin;
+			return preg_match($allowedOrigin, $origin) !== false;
 		}
 	}
 }
