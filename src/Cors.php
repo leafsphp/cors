@@ -8,7 +8,7 @@ namespace Leaf\Http;
  * CORS simplified. Enable CORS with various options.
  * Inspired by Express JS' CORS package.
  * 
- * @version 1.0
+ * @version 1.1
  * @since 3.0-beta
  */
 class Cors
@@ -16,23 +16,17 @@ class Cors
 	protected static $config = [];
 
 	protected static $defaultConfig = [
-		"origin" => "*",
-		"methods" => "GET,HEAD,PUT,PATCH,POST,DELETE",
-		"allowedHeaders" => "*",
-		"exposedHeaders" => "",
-		"credentials" => false,
-		"maxAge" => null,
-		"preflightContinue" => false,
-		"optionsSuccessStatus" => 204,
+		'origin' => '*',
+		'methods' => 'GET,HEAD,PUT,PATCH,POST,DELETE',
+		'headers' => '*',
+		'exposedHeaders' => '',
+		'credentials' => false,
+		'maxAge' => null,
+		'preflightContinue' => false,
+		'optionsSuccessStatus' => 204,
 	];
 
-	/**
-	 * Configure for CORS
-	 * 
-	 * @param array $config configuration for CORS.
-	 * @see https://github.com/leafsphp/cors
-	 */
-	public static function config(array $config = [])
+	public static function config($config = [])
 	{
 		static::$config = array_merge(static::$defaultConfig, $config);
 
@@ -43,107 +37,112 @@ class Cors
 		static::configureCredentials();
 		static::configureMethods();
 
-		if (static::$config["preflightContinue"]) {
-			// skip to code but left for future use
-		} else {
-			if (Request::getMethod() === "OPTIONS") {
-				Response::throwErr(
-					"",
-					static::$config["optionsSuccessStatus"]
-				);
+		if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
+			if (static::$config['preflightContinue']) {
+				// skip to code
+			} else {
+				exit(0);
 			}
 		}
 	}
 
 	protected static function configureMethods()
 	{
-		if (is_array(static::$config["methods"])) {
-			static::$config["methods"] = implode(",", static::$config["methods"]);
+		if (is_array(static::$config['methods'])) {
+			static::$config['methods'] = implode(',', static::$config['methods']);
 		}
 
-		Headers::accessControl("Allow-Methods", static::$config["methods"]);
+		Headers::accessControl('Allow-Methods', static::$config['methods']);
 	}
 
 	protected static function configureOrigin()
 	{
-		$origin = static::$config["origin"];
+		$origin = static::$config['origin'];
 
-		if (Request::getMethod() === "OPTIONS" && !static::$config["preflightContinue"]) {
-			// Safari (and potentially other browsers) need content-length 0,
-			// for 204 or they just hang waiting for a body
-			Headers::set("Content-Length", "0");
-		}
+		// if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS' && static::$config['optionsSuccessRequest'] == '204') {
+		// 	// Safari (and potentially other browsers) need content-length 0,
+		// 	// for 204 or they just hang waiting for a body
+		// 	Headers::set('Content-Length', '0');
+		// }
 
 		if (static::isOriginAllowed($origin)) {
-			Headers::accessControl("Allow-Origin", $_SERVER['HTTP_ORIGIN'] ?? Request::getUrl());
+			Headers::accessControl(
+				'Allow-Origin',
+				$_SERVER['HTTP_ORIGIN']
+			);
 		}
 
-		if ($origin !== "*") {
-			Headers::set("Vary", "Origin");
+		if ($origin !== '*') {
+			Headers::set('Vary', 'Origin');
 		}
 	}
 
 	protected static function configureHeaders()
 	{
-		$headers = static::$config["allowedHeaders"];
+		$headers = static::$config['headers'];
 
 		if (!$headers) {
 			// .headers wasn't specified, so reflect the request headers
-			$headers = Headers::get("access-control-request-headers");
-			Headers::set("Vary", "Access-Control-Request-Headers");
+			$headers = Headers::get('access-control-request-headers');
+			Headers::set('Vary', 'Access-Control-Request-Headers');
 		}
 
 		if ($headers) {
 			Headers::accessControl(
-				"Allow-Headers",
-				is_array($headers) ? implode(", ", $headers) : (strlen($headers) ? $headers : "*")
+				'Allow-Headers',
+				is_array($headers) ? implode(', ', $headers) : (strlen($headers) ? $headers : '*')
 			);
 		}
 	}
 
 	protected static function configureExposedHeaders()
 	{
-		$headers = static::$config["exposedHeaders"];
+		$headers = static::$config['exposedHeaders'];
 
 		if ($headers) {
 			Headers::accessControl(
-				"Expose-Headers",
-				is_array($headers) ? implode(", ", $headers) : $headers
+				'Expose-Headers',
+				is_array($headers) ? implode(', ', $headers) : $headers
 			);
 		}
 	}
 
 	protected static function configureMaxAge()
 	{
-		if (is_int(static::$config["maxAge"])) {
-			Headers::accessControl([
-				"Max-Age" => static::$config["maxAge"],
-			]);
+		if (static::$config['maxAge']) {
+			Headers::accessControl(
+				'Max-Age',
+				static::$config['maxAge']
+			);
 		}
 	}
 
 	protected static function configureCredentials()
 	{
-		if (static::$config["credentials"] === true) {
-			Headers::accessControl("Allow-Credentials", "true");
+		if (static::$config['credentials'] === true) {
+			Headers::accessControl('Allow-Credentials', 'true');
 		}
 	}
 
-	protected static function isOriginAllowed($allowedOrigin): bool
-    {
-		$origin = $_SERVER['HTTP_ORIGIN'] ?? Request::getUrl();
+	protected static function isOriginAllowed($allowedOrigin)
+	{
+		$origin = $_SERVER['HTTP_ORIGIN'];
 
 		if (is_array($allowedOrigin)) {
 			for ($i = 0; $i < count($allowedOrigin); $i++) {
-				if (static::isOriginAllowed($allowedOrigin[$i])) {
+				if (static::isOriginAllowed($origin, $allowedOrigin[$i])) {
 					return true;
 				}
 			}
 
 			return false;
 		} else if (is_string($allowedOrigin)) {
-			return $origin === $allowedOrigin;
-		} else if ((explode('.', PHP_VERSION)[0] < 8) && @preg_match($allowedOrigin, null) === false) {
+			if ($allowedOrigin == '*') {
+				return true;
+			}
+
+			return $origin == $allowedOrigin;
+		} else if (@preg_match($allowedOrigin, null) === false) {
 			return !!preg_match($allowedOrigin, $origin);
 		} else {
 			return !!$allowedOrigin;
