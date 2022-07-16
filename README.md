@@ -16,7 +16,13 @@ This is a [Leaf PHP](https://leafphp.netlify.app/) module used to enable and con
 
 ## Installation
 
-You can easily install it using [Composer](https://getcomposer.org/):
+You can easily install it using [leaf cli](https://cli.leafphp.dev)
+
+```sh
+leaf install cors
+```
+
+or with [Composer](https://getcomposer.org/):
 
 ```bash
 composer require leafs/cors
@@ -36,7 +42,7 @@ $app = new Leaf\App;
 $app->cors();
 
 $app->get('/products/{id}', function () use($app) {
-  $app->response()->json({["message" => "This is CORS-enabled for all origins!"]);
+  $app->response()->json(['message' => 'This is CORS-enabled for all origins!']);
 });
 
 $app->run();
@@ -47,17 +53,17 @@ You can alternatively call `Leaf\Http\Cors::config()` instead of `$app->cors()` 
 ### Configuring CORS
 
 ```php
-require __DIR__ . "/vendor/autoload.php";
+require __DIR__ . '/vendor/autoload.php';
 
 $app = new Leaf\App;
 
 $app->cors([
-  "origin" => 'http://example.com',
-  "optionsSuccessStatus" => 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
+  'origin' => 'http://example.com',
+  'optionsSuccessStatus' => 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
 ]);
 
 $app->get('/products/{id}', function () use($app) {
-  $app->response()->json({["message" => "This is CORS-enabled for all origins!"]);
+  $app->response()->json(['message' => 'This is CORS-enabled for all origins!']);
 });
 
 $app->run();
@@ -67,8 +73,8 @@ $app->run();
 
 * `origin`: Configures the **Access-Control-Allow-Origin** CORS header. Possible values:
   * `String` - set `origin` to a specific origin. For example if you set it to `"http://example.com"` only requests from "http://example.com" will be allowed.
-  * `RegExp` - set `origin` to a regular expression pattern which will be used to test the request origin. If it's a match, the request origin will be reflected. For example the pattern `/example\.com$/` will reflect any request that is coming from an origin ending with "example.com".
-  * `Array` - set `origin` to an array of valid origins. Each origin can be a `String` or a `RegExp`. For example `["http://example1.com", /\.example2\.com$/]` will accept any request from "http://example1.com" or from a subdomain of "example2.com".
+  * `RegExp (in string form)` - set `origin` to a regular expression pattern which will be used to test the request origin. If it's a match, the request origin will be reflected. For example the pattern `'/example\.com$/'` will reflect any request that is coming from an origin ending with "example.com".
+  * `Array` - set `origin` to an array of valid origins. Each origin can be a `String` or a `RegExp`. For example `["http://example1.com", '/\.example2\.com$/']` will accept any request from "http://example1.com" or from a subdomain of "example2.com".
   * `Function` - set `origin` to a function implementing some custom logic. The function takes the request origin as the first parameter and a callback (called as `callback(err, origin)`, where `origin` is a non-function value of the `origin` option) as the second.
 * `methods`: Configures the **Access-Control-Allow-Methods** CORS header. Expects a comma-delimited string (ex: 'GET,PUT,POST') or an array (ex: `['GET', 'PUT', 'POST']`).
 * `allowedHeaders`: Configures the **Access-Control-Allow-Headers** CORS header. Expects a comma-delimited string (ex: 'Content-Type,Authorization') or an array (ex: `['Content-Type', 'Authorization']`). If not specified, defaults to reflecting the headers specified in the request's **Access-Control-Request-Headers** header.
