@@ -126,6 +126,7 @@ class Cors
 
 	protected static function isOriginAllowed($allowedOrigin)
 	{
+		if(isset($_SERVER['HTTP_ORIGIN']) === false){ return false; }
 		$origin = $_SERVER['HTTP_ORIGIN'];
 
 		if (is_array($allowedOrigin)) {
