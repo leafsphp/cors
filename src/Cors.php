@@ -68,7 +68,7 @@ class Cors
 		if (static::isOriginAllowed($origin)) {
 			Headers::accessControl(
 				'Allow-Origin',
-				$_SERVER['HTTP_ORIGIN']
+				$_SERVER['HTTP_ORIGIN'] ?? $_SERVER['HTTP_REFERER'] ?? $_SERVER['REMOTE_ADDR']
 			);
 		}
 
@@ -126,8 +126,7 @@ class Cors
 
 	protected static function isOriginAllowed($allowedOrigin)
 	{
-		if(isset($_SERVER['HTTP_ORIGIN']) === false){ return false; }
-		$origin = $_SERVER['HTTP_ORIGIN'];
+		$origin = $_SERVER['HTTP_ORIGIN'] ?? $_SERVER['HTTP_REFERER'] ?? $_SERVER['REMOTE_ADDR'];
 
 		if (is_array($allowedOrigin)) {
 			for ($i = 0; $i < count($allowedOrigin); $i++) {
