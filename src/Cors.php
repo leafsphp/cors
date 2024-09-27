@@ -18,7 +18,7 @@ class Cors
 	protected static $defaultConfig = [
 		'origin' => '*',
 		'methods' => 'GET,HEAD,PUT,PATCH,POST,DELETE',
-		'headers' => '*',
+		'allowedHeaders' => '*',
 		'exposedHeaders' => '',
 		'credentials' => false,
 		'maxAge' => null,
@@ -79,7 +79,7 @@ class Cors
 
 	protected static function configureHeaders()
 	{
-		$headers = static::$config['headers'];
+		$headers = static::$config['allowedHeaders'];
 
 		if (!$headers) {
 			// .headers wasn't specified, so reflect the request headers
@@ -127,7 +127,7 @@ class Cors
 	protected static function isOriginAllowed($allowedOrigin)
 	{
 		$origin = $_SERVER['HTTP_ORIGIN'] ?? $_SERVER['HTTP_HOST'];
-
+		
 		if (is_array($allowedOrigin)) {
 			for ($i = 0; $i < count($allowedOrigin); $i++) {
 				if (static::isOriginAllowed($allowedOrigin[$i])) {
