@@ -12,7 +12,7 @@
 [![Total Downloads](https://poser.pugx.org/leafs/cors/downloads)](https://packagist.org/packages/leafs/cors)
 [![License](https://poser.pugx.org/leafs/cors/license)](https://packagist.org/packages/leafs/cors)
 
-This is a [Leaf PHP](https://leafphp.netlify.app/) module used to enable and configure [CORS](http://en.wikipedia.org/wiki/Cross-origin_resource_sharing) with various options. This module can be used both in and out of Leaf and so can be considered a general module. It is also inspired by the [ExpressJS](https://github.com/expressjs/express) [cors package](https://github.com/expressjs/cors).
+This is the CORS handler for Leaf.
 
 ## Installation
 
@@ -98,7 +98,3 @@ The default configuration is the equivalent of:
   "optionsSuccessStatus": 204,
 }
 ```
-
-## View Leaf's docs [here](https://leafphp.netlify.app/#/)
-
-Built with ❤ by [**Mychi Darko**](https://mychi.netlify.app)

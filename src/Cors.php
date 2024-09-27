@@ -127,7 +127,7 @@ class Cors
 	protected static function isOriginAllowed($allowedOrigin)
 	{
 		$origin = $_SERVER['HTTP_ORIGIN'] ?? $_SERVER['HTTP_HOST'];
-		
+
 		if (is_array($allowedOrigin)) {
 			for ($i = 0; $i < count($allowedOrigin); $i++) {
 				if (static::isOriginAllowed($allowedOrigin[$i])) {
@@ -137,11 +137,22 @@ class Cors
 
 			return false;
 		} else if (is_string($allowedOrigin)) {
-			if ($allowedOrigin === "*" || $origin === $allowedOrigin) {
+			if ($allowedOrigin === '*' || $origin === $allowedOrigin) {
 				return true;
 			}
 
-			return preg_match($allowedOrigin, $origin) !== false;
+			if (preg_match("/^\/.+\/[a-z]*$/i", $allowedOrigin)) {
+				return preg_match($allowedOrigin, $origin) !== false;
+			}
+
+			if (
+				strpos($allowedOrigin, $origin) !== false ||
+				strpos($origin, $allowedOrigin) !== false
+			) {
+				return true;
+			}
+
+			return false;
 		}
 	}
 }
