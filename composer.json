@@ -29,12 +29,12 @@
     "prefer-stable": true,
     "require": {
         "php": "^8.2",
-        "leafs/http": "*",
-        "leafs/alchemy": "v5.x-dev"
+        "leafs/http": "*"
     },
     "require-dev": {
         "pestphp/pest": "*",
-        "friendsofphp/php-cs-fixer": "*"
+        "friendsofphp/php-cs-fixer": "*",
+        "leafs/alchemy": "v5.x-dev"
     },
     "config": {
         "allow-plugins": {
